@@ -6,3 +6,5 @@ Use the following macros to quickly format and validate the addresses provided b
 Use the PostalCode Macro to capitalize and format Canadian postal codes.
 
 Use the ValidateStreetAddress Macro to report error on any street address erroneously containing email address instead (a common mistake) or street addresses that are missing street number (another common mistake).
+
+Use the FormatCustomerName Macro to capitalize the first letter of a customer's first and last name.
