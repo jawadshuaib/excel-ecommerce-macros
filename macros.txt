@@ -1,0 +1,85 @@
+Sub PostalCode()
+'
+' PostalCode Macro
+' Capitalize postal codes and put a space between them if necessary
+'
+' Keyboard Shortcut: Ctrl+Shift+P
+'
+   Dim lastRow As Integer
+   Dim currentCol As String
+
+   currentCol = Split(ActiveCell.Address, "$")(1)
+
+   With ActiveSheet
+       lastRow = .Cells(.Rows.Count, 1).End(xlUp).Row
+   End With
+
+   If lastRow > 0 And lastRow < 1000 Then
+       ' ActiveSheet.Range(lastRow & ":" & ActiveCell.Column).Select
+       Range(currentCol & "1", Range(currentCol & Rows.Count).End(xlUp)).Select
+   End If
+
+   For Each cell In Selection
+       If Not cell.HasFormula Then
+           cell.Value = UCase(cell.Value)
+           If Len(cell.Value) > 3 Then
+               cell.Value = Left(cell.Value, 3) & " " & Right(cell.Value, Len(cell.Value) - 3)
+           End If
+       End If
+   Next cell
+End Sub
+
+Sub ValidateStreetAddress()
+
+   Dim lastRow As Integer
+   Dim currentCol As String
+   Dim hasError As Boolean
+
+   currentCol = Split(ActiveCell.Address, "$")(1)
+
+   With ActiveSheet
+       lastRow = .Cells(.Rows.Count, 1).End(xlUp).Row
+   End With
+
+   If lastRow > 0 And lastRow < 1000 Then
+       Range(currentCol & "1", Range(currentCol & Rows.Count).End(xlUp)).Select
+   End If
+
+   If Selection.Rows.Count < 20 Then
+       For Each cell In Selection
+           If Not cell.HasFormula Then
+               If Len(cell.Value) > 1 Then
+                   ' Check if someone accidentally entered email for a street address
+                   If InStr(1, cell.Value, "@", vbTextCompare) Then
+                       hasError = True
+                   Else
+                       hasError = False
+                   End If
+                   ' Check if someone accidentally entered a street address without a street number
+                   If HasNumber(cell.Value) = False Then
+                       hasError = True
+                   Else
+                       hasError = False
+                   End If
+               End If
+           End If
+
+           If hasError = True Then
+               Selection.Font.Bold = True
+               cell.Interior.ColorIndex = 3
+           End If
+       Next cell
+   End If
+End Sub
+
+Function HasNumber(strData As String) As Boolean
+   Dim iCnt As Integer
+
+   For iCnt = 1 To Len(strData)
+       If IsNumeric(Mid(strData, iCnt, 1)) Then
+           HasNumber = True
+           Exit Function
+       End If
+   Next iCnt
+
+End Function
